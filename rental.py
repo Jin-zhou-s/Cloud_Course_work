@@ -6,6 +6,7 @@ class rental(object):
     def __init__(self):
         self.users = []
         self.manufacturers = []
+        self.rental_car = []
 
     def add_user(self, user_name, user_number):
         for repeat_name, repeat_number in self.users:
@@ -38,6 +39,22 @@ class rental(object):
             for manufacturer_name, manufacturer_country in self.manufacturers:
                 array.append(f"manufacturer name:{manufacturer_name},  manufacturer country: {manufacturer_country}")
             return "\n".join(array)
+
+    def add_rental_car(self, manufacturer_name, car_model):
+        for input_manufacturer_name, _ in self.manufacturers:
+            if manufacturer_name == input_manufacturer_name:
+                self.rental_car.append((manufacturer_name, car_model))
+                return True
+        return False
+
+    def return_cars_not_rented(self):
+        if not self.rental_car:
+            return "not have rental car"
+        else:
+            index = []
+            for manufacturer_name, car_model in self.rental_car:
+                index.append(f"manufacturer name:{manufacturer_name}, car model:{car_model}")
+            return "\n".join(index)
 
 
 def main():
