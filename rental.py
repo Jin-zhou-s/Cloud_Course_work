@@ -7,12 +7,15 @@ class rental(object):
         self.users = []
 
     def add_user(self, user_name, user_number):
+        for repeat_name, repeat_number, in self.users:
+            if user_name == repeat_name and user_number == repeat_number:
+                return False
         self.users.append((user_name, user_number))
         return True
 
     def return_users(self):
         if not self.users:
-            return "not have this users"
+            return "not have users"
         else:
             index = []
             for user_name, user_number in self.users:

@@ -17,6 +17,7 @@ sys.excepthook = Pyro5.errors.excepthook
 rental_object = Proxy("PYRONAME:example.rental")
 
 rental_object.add_user("Conor Reilly", "123456")
+rental_object.add_user("david zhou", "678910")
 print(rental_object.return_users())
 rental_object.add_manufacturer("BMW", "Germany")
 print(rental_object.return_manufacturers())
