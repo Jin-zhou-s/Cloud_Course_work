@@ -10,6 +10,15 @@ class rental(object):
         self.users.append((user_name, user_number))
         return True
 
+    def return_users(self):
+        if not self.users:
+            return "not have this users"
+        else:
+            index = []
+            for user_name, user_number in self.users:
+                index.append(f"User name: {user_name}, User number: {user_number}")
+            return "\n".join(index)
+
 
 def main():
     demo = Pyro5.api.Daemon()
