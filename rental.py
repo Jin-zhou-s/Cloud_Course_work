@@ -7,7 +7,8 @@ class rental(object):
         self.users = []
         self.manufacturers = []
         self.rental_car = []
-        self.user_rental_car = []
+        self.not_rental_car = []
+        self.rented_car = []
 
     def add_user(self, user_name, user_number):
         for repeat_name, repeat_number in self.users:
@@ -45,35 +46,40 @@ class rental(object):
         for input_manufacturer_name, _ in self.manufacturers:
             if manufacturer_name == input_manufacturer_name:
                 self.rental_car.append((manufacturer_name, car_model))
+                self.not_rental_car.append((manufacturer_name, car_model))
                 return True
         return False
 
     def return_cars_not_rented(self):
-        if not self.rental_car:
-            return "not have rental car"
+        if not self.not_rental_car:
+            return "not have not rental car"
         else:
             index = []
-            for manufacturer_name, car_model in self.rental_car:
+            for manufacturer_name, car_model in self.not_rental_car:
                 index.append(f"manufacturer name:{manufacturer_name}, car model:{car_model}")
             return "\n".join(index)
 
     def rent_car(self, user_name, car_model, year, month, day):
-        for rental_manufacturer_name, rental_car_model in self.rental_car:
+        for rental_manufacturer_name, rental_car_model in self.not_rental_car:
             if car_model == rental_car_model:
                 if isinstance(year, int) and isinstance(month, int) and isinstance(day,
                                                                                    int) and 0 < year and 0 < month <= 12 and 0 < day <= 31:
-                    self.rental_car.remove((rental_manufacturer_name, car_model))
-                    self.user_rental_car.append((user_name, car_model, year, month, day))
+                    self.not_rental_car.remove((rental_manufacturer_name, rental_car_model))
+                    self.rented_car.append((user_name, car_model, year, month, day))
                     return "1"
         return "0"
 
     def return_cars_rented(self):
-        if not self.user_rental_car:
-            return "not user rental car"
+        if not self.rented_car:
+            return "not rented car"
         else:
             index = []
-        for user_name, car_model, year, month, day in self.user_rental_car:
-            index.append(f"user name: {user_name}, car model: {car_model}, year: {year}, month: {month}, day: {day}")
+        for _, car_model, _, _, _ in self.rented_car:
+            for manufacturer_name, car_model_rented in self.rental_car:
+                if car_model_rented == car_model:
+                    index.append(
+                        f"manufacturer name:{manufacturer_name}, car model:{car_model}")
+                    break
         return "\n".join(index)
 
 
