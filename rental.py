@@ -1,4 +1,5 @@
 import Pyro5.api
+from datetime import datetime
 
 
 @Pyro5.api.expose
@@ -69,15 +70,17 @@ class rental(object):
 
     # Task 7
     def rent_car(self, user_name, car_model, year, month, day):
-        for rental_manufacturer_name, rental_car_model in self.not_rental_car:
-            if car_model == rental_car_model:
-                if isinstance(year, int) and isinstance(month, int) and isinstance(day,
-                                                                                   int) and 0 < year and 0 < month <= 12 and 0 < day <= 31:
+        if isinstance(year, int) and isinstance(month, int) and isinstance(day,
+                                                                           int) and 0 < year and 0 < month <= 12 and 0 < day <= 31:
+            rent_time = datetime(year, month, day)
+            for rental_manufacturer_name, rental_car_model in self.not_rental_car:
+                if car_model == rental_car_model:
                     self.not_rental_car.remove((rental_manufacturer_name, rental_car_model))
-                    self.rented_car_recording.append((user_name, car_model, year, month, day))
+                    self.rented_car_recording.append((user_name, car_model, rent_time))
                     self.rented_car.append((rental_manufacturer_name, rental_car_model))
                     return "1"
-        return "0"
+        else:
+            return "0"
 
     # Task8
     def return_cars_rented(self):
@@ -89,8 +92,32 @@ class rental(object):
             index.append(f"manufacturer name:{manufacturer_name}, car model:{car_model}")
         return "\n".join(index)
 
-    # def end_rental(self, user_name, car_model, year, month, day):
-    #     for
+    # Task 9
+    def end_rental(self, user_name, car_model, year, month, day):
+        if isinstance(year, int) and isinstance(month, int) and isinstance(day,
+                                                                           int) and 0 < year and 0 < month <= 12 and 0 < day <= 31:
+            end_time = datetime(year, month, day)
+            for manufacturer_name, rented_car_model in self.rented_car:
+                if car_model == rented_car_model:
+                    self.rented_car.remove((manufacturer_name, rented_car_model))
+                    self.not_rental_car.append((manufacturer_name, rented_car_model))
+            for rented_user_name, rented_car_model, rented_date in self.rented_car_recording:
+                if user_name == rented_user_name and car_model == rented_car_model:
+                    self.end_rented_car_recording.append((rented_user_name, rented_car_model, rented_date, end_time))
+                    self.rented_car_recording.remove((rented_user_name, rented_car_model, rented_date))
+
+    # Task 12
+    def user_rental_date(self, user_name, start_year, start_month, start_day, end_year,
+                         end_month, end_day):
+        start_date = datetime(start_year, start_month, start_day)
+        end_date = datetime(end_year, end_month, end_day)
+        index = []
+        for recording_user, recording_model, rental_time, back_time in self.end_rented_car_recording:
+            if recording_user == user_name and rental_time > start_date and back_time < end_date:
+                for factor_name, car_model in self.rental_car:
+                    if recording_model == car_model:
+                        index.append(f"manufacturer name:{factor_name}, car model:{car_model}")
+                return "\n".join(index)
 
 
 def main():
