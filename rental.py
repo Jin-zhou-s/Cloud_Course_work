@@ -12,6 +12,7 @@ class rental(object):
         self.rented_car_recording = []
         self.end_rented_car_recording = []
 
+    # Task 1
     def add_user(self, user_name, user_number):
         for repeat_name, repeat_number in self.users:
             if user_name == repeat_name:
@@ -19,6 +20,7 @@ class rental(object):
         self.users.append((user_name, user_number))
         return True
 
+    # Task 2
     def return_users(self):
         if not self.users:
             return "not have users"
@@ -28,6 +30,7 @@ class rental(object):
                 index.append(f"User name: {user_name}, User number: {user_number}")
             return "\n".join(index)
 
+    # Task 3
     def add_manufacturer(self, manufacturer_name, manufacturer_country):
         for repeat_manufacturer_name, repeat_manufacturer_country in self.manufacturers:
             if manufacturer_name == repeat_manufacturer_name:
@@ -35,6 +38,7 @@ class rental(object):
         self.manufacturers.append((manufacturer_name, manufacturer_country))
         return True
 
+    # Task 4
     def return_manufacturers(self):
         if not self.manufacturers:
             return "not have manufacturer"
@@ -44,6 +48,7 @@ class rental(object):
                 array.append(f"manufacturer name:{manufacturer_name},  manufacturer country: {manufacturer_country}")
             return "\n".join(array)
 
+    # Task 5
     def add_rental_car(self, manufacturer_name, car_model):
         for input_manufacturer_name, _ in self.manufacturers:
             if manufacturer_name == input_manufacturer_name:
@@ -52,6 +57,7 @@ class rental(object):
                 return True
         return False
 
+    # Task 6
     def return_cars_not_rented(self):
         if not self.not_rental_car:
             return "not have not rental car"
@@ -61,6 +67,7 @@ class rental(object):
                 index.append(f"manufacturer name:{manufacturer_name}, car model:{car_model}")
             return "\n".join(index)
 
+    # Task 7
     def rent_car(self, user_name, car_model, year, month, day):
         for rental_manufacturer_name, rental_car_model in self.not_rental_car:
             if car_model == rental_car_model:
@@ -72,6 +79,7 @@ class rental(object):
                     return "1"
         return "0"
 
+    # Task8
     def return_cars_rented(self):
         if not self.rented_car:
             return "not rented car"
