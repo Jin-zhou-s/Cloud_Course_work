@@ -106,6 +106,22 @@ class rental(object):
                     self.end_rented_car_recording.append((rented_user_name, rented_car_model, rented_date, end_time))
                     self.rented_car_recording.remove((rented_user_name, rented_car_model, rented_date))
 
+    # Task 10
+    def delete_car(self, car_model):
+        self.not_rental_car = list(filter(lambda x: x[1] != car_model, self.not_rental_car))
+        self.rental_car = list(filter(lambda x: x[1] != car_model, self.rental_car))
+
+    # Task 11
+    def delete_user(self, user_name):
+        for ed_delete_user, _, _ in self.rented_car_recording:
+            if user_name == ed_delete_user:
+                return print("cant delete this user")
+        for end_delete_user, _, _, _ in self.end_rented_car_recording:
+            if user_name == end_delete_user:
+                return print("cant delete this user")
+        self.users = list(filter(lambda x: x[0] != user_name, self.users))
+        return print("delete finish")
+
     # Task 12
     def user_rental_date(self, user_name, start_year, start_month, start_day, end_year,
                          end_month, end_day):
