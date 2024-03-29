@@ -17,7 +17,7 @@ class rental(object):
         self.rented_car = []
         # Borrowed Vehicle Records(users name, car model, borrow date)
         self.rented_car_recording = []
-
+        # Completed car rental records
         self.end_rented_car_recording = []
 
     # Task 1 - Add User
@@ -27,7 +27,7 @@ class rental(object):
             if user_name == repeat_name:
                 return print("Already have a user of the same name")
         # Add Data
-        self.users.append((user_name, user_number))
+        self.users.append((str(user_name), str(user_number)))
         return print("Add successfully")
 
     # Task 2 - Return user information
@@ -47,7 +47,7 @@ class rental(object):
             # If a manufacturer with the same name already exists
             if manufacturer_name == repeat_manufacturer_name:
                 return print("There is already a manufacturer of the same name")
-        self.manufacturers.append((manufacturer_name, manufacturer_country))
+        self.manufacturers.append((str(manufacturer_name), str(manufacturer_country)))
         return print("Add successfully")
 
     # Task 4 - Back to Manufacturer Information
@@ -70,8 +70,8 @@ class rental(object):
         for input_manufacturer_name, _ in self.manufacturers:
             # If the manufacturer has added
             if manufacturer_name == input_manufacturer_name:
-                self.rental_car.append((manufacturer_name, car_model))
-                self.not_rental_car.append((manufacturer_name, car_model))
+                self.rental_car.append((str(manufacturer_name), str(car_model)))
+                self.not_rental_car.append((str(manufacturer_name), str(car_model)))
                 return print("Add successfully")
         return print("not available from this manufacturer")
 
@@ -104,10 +104,10 @@ class rental(object):
         # date determination
         try:
             rent_time = datetime(year, month, day)
-        # If the date is wrong (e.g. 40 December 2020)
+        # If the date is wrong (40 December 2020)
         except ValueError as e:
             return print("Incorrect date")
-        # If the date type is incorrect (e.g. 2020.12, December, 21st)
+        # If the date type is incorrect (2020.12, December, 21st)
         except TypeError as e:
             return print("The date cannot be a floating point number")
         # If the date is out of limits
@@ -119,10 +119,8 @@ class rental(object):
                 self.not_rental_car.remove((rental_manufacturer_name, rental_car_model))
                 self.rented_car_recording.append((user_name, car_model, rent_time))
                 self.rented_car.append((rental_manufacturer_name, rental_car_model))
-                # return 1
                 return 1
         else:
-            # return 0
             return 0
 
     # Task8 - Back to Rented Car Information
@@ -139,6 +137,7 @@ class rental(object):
     # Task 9 - Return of rented cars by users
     def end_rental(self, user_name, car_model, year, month, day):
         found = False
+        date = False
         # If the user has a borrowed car of this model
         for name, car, _ in self.rented_car_recording:
             if user_name == name and car_model == car:
@@ -154,23 +153,27 @@ class rental(object):
             return print("The date cannot be a floating point number")
         except OverflowError as e:
             return print("Exceeding the date length limit, the date year should be 1 to 9999 years")
+
         for rented_user_name, rented_car_model, rented_date in self.rented_car_recording:
             # The date of return must be greater than or equal to the date of hire,
-            # and there must be a corresponding users name and car model in the record of hired cars.
+            # and there must be a corresponding users name and car model in the record of hired cars
             if user_name == rented_user_name and car_model == rented_car_model and rented_date <= end_date:
                 self.end_rented_car_recording.append((rented_user_name, rented_car_model, rented_date, end_date))
                 self.rented_car_recording.remove((rented_user_name, rented_car_model, rented_date))
+                date = True
+                break
             # No corresponding rental records
-            else:
-                return print("The return date must be after the borrowing date (can be the same day)")
+
+        if not date:
+            return print("The return date must be after the borrowing date (can be the same day)")
         for manufacturer_name, rented_car_model in self.rented_car:
             # If the vehicle model is the same
             if car_model == rented_car_model:
                 self.rented_car.remove((manufacturer_name, rented_car_model))
                 self.not_rental_car.append((manufacturer_name, rented_car_model))
-                return print("Successful restitution")
+            return print("Successful restitution")
 
-    # Task 10 — Deletion of not rented cars of specified models
+    # Task 10 - Deletion of not rented cars of specified models
     def delete_car(self, car_model):
         # Delete all cars of this model that have not been rented(x[0]: manufacturer_name, x[1]: car_model)
         self.not_rental_car = list(filter(lambda x: x[1] != car_model, self.not_rental_car))
@@ -202,6 +205,8 @@ class rental(object):
         except OverflowError as e:
             return "Exceeding the date length limit, the date year should be 1 to 9999 years"
         index = []
+        if end_date < start_date:
+            return "The start date must be no later than the end date"
         for recording_user, recording_model, rental_time, back_time in self.end_rented_car_recording:
             # If this user exists and the recorded time is within the search range
             if recording_user == user_name and rental_time >= start_date and back_time <= end_date:
@@ -211,6 +216,18 @@ class rental(object):
                         index.append(f"manufacturer name:{factor_name}, car model:{car_model}")
                         break
         return "User rental history:\n" + "\n".join(index)
+
+    def print_rental_data(self):
+        return self.rental_car
+
+    def print_not_rental_data(self):
+        return self.not_rental_car
+
+    def print_rented_data(self):
+        return self.rented_car
+
+    def print_rented_recording(self):
+        return self.rented_car_recording
 
 
 def main():
