@@ -17,9 +17,9 @@ class rental(object):
     def add_user(self, user_name, user_number):
         for repeat_name, repeat_number in self.users:
             if user_name == repeat_name:
-                return False
+                return print("Already have a user of the same name")
         self.users.append((user_name, user_number))
-        return True
+        return print("Add successfully")
 
     # Task 2
     def return_users(self):
@@ -35,9 +35,9 @@ class rental(object):
     def add_manufacturer(self, manufacturer_name, manufacturer_country):
         for repeat_manufacturer_name, repeat_manufacturer_country in self.manufacturers:
             if manufacturer_name == repeat_manufacturer_name:
-                return False
+                return print("There is already a manufacturer of the same name")
         self.manufacturers.append((manufacturer_name, manufacturer_country))
-        return True
+        return print("Add successfully")
 
     # Task 4
     def return_manufacturers(self):
@@ -53,13 +53,13 @@ class rental(object):
     def add_rental_car(self, manufacturer_name, car_model):
         for input_manufacturer_name, input_car_model in self.rental_car:
             if manufacturer_name != input_manufacturer_name and car_model == input_car_model:
-                return "Vehicle model does not match manufacturer"
+                return print("Vehicle model does not match manufacturer")
         for input_manufacturer_name, _ in self.manufacturers:
             if manufacturer_name == input_manufacturer_name:
                 self.rental_car.append((manufacturer_name, car_model))
                 self.not_rental_car.append((manufacturer_name, car_model))
-                return "Add successfully"
-        return "not available from this manufacturer"
+                return print("Add successfully")
+        return print("not available from this manufacturer")
 
     # Task 6
     def return_cars_not_rented(self):
@@ -83,15 +83,20 @@ class rental(object):
         for name, car, _ in self.rented_car_recording:
             if user_name == name and car_model == car:
                 return print("cant to rent same model car ")
-        if isinstance(year, int) and isinstance(month, int) and isinstance(day,
-                                                                           int) and 0 < year and 0 < month <= 12 and 0 < day <= 31:
+        try:
             rent_time = datetime(year, month, day)
-            for rental_manufacturer_name, rental_car_model in self.not_rental_car:
-                if car_model == rental_car_model:
-                    self.not_rental_car.remove((rental_manufacturer_name, rental_car_model))
-                    self.rented_car_recording.append((user_name, car_model, rent_time))
-                    self.rented_car.append((rental_manufacturer_name, rental_car_model))
-                    return 1
+        except ValueError as e:
+            return print("Incorrect date")
+        except TypeError as e:
+            return print("The date cannot be a floating point number")
+        except OverflowError as e:
+            return print("Exceeding the date length limit, the date year should be 1 to 9999 years")
+        for rental_manufacturer_name, rental_car_model in self.not_rental_car:
+            if car_model == rental_car_model:
+                self.not_rental_car.remove((rental_manufacturer_name, rental_car_model))
+                self.rented_car_recording.append((user_name, car_model, rent_time))
+                self.rented_car.append((rental_manufacturer_name, rental_car_model))
+                return 1
         else:
             return 0
 
@@ -113,44 +118,61 @@ class rental(object):
                 found = True
         if not found:
             return print("user have rented this model car")
-        if isinstance(year, int) and isinstance(month, int) and isinstance(day,
-                                                                           int) and 0 < year and 0 < month <= 12 and 0 < day <= 31:
+        try:
             end_date = datetime(year, month, day)
-            for manufacturer_name, rented_car_model in self.rented_car:
-                if car_model == rented_car_model:
-                    self.rented_car.remove((manufacturer_name, rented_car_model))
-                    self.not_rental_car.append((manufacturer_name, rented_car_model))
-            for rented_user_name, rented_car_model, rented_date in self.rented_car_recording:
-                if user_name == rented_user_name and car_model == rented_car_model and rented_date < end_date:
-                    self.end_rented_car_recording.append((rented_user_name, rented_car_model, rented_date, end_date))
-                    self.rented_car_recording.remove((rented_user_name, rented_car_model, rented_date))
+        except ValueError as e:
+            return print("Incorrect date")
+        except TypeError as e:
+            return print("The date cannot be a floating point number")
+        except OverflowError as e:
+            return print("Exceeding the date length limit, the date year should be 1 to 9999 years")
+        for rented_user_name, rented_car_model, rented_date in self.rented_car_recording:
+            if user_name == rented_user_name and car_model == rented_car_model and rented_date <= end_date:
+                self.end_rented_car_recording.append((rented_user_name, rented_car_model, rented_date, end_date))
+                self.rented_car_recording.remove((rented_user_name, rented_car_model, rented_date))
+            else:
+                return print("The return date must be after the borrowing date (can be the same day)")
+        for manufacturer_name, rented_car_model in self.rented_car:
+            if car_model == rented_car_model:
+                self.rented_car.remove((manufacturer_name, rented_car_model))
+                self.not_rental_car.append((manufacturer_name, rented_car_model))
+                return print("Successful restitution")
 
     # Task 10
     def delete_car(self, car_model):
         self.not_rental_car = list(filter(lambda x: x[1] != car_model, self.not_rental_car))
+        return print("car delete finish")
 
     # Task 11
     def delete_user(self, user_name):
         for ed_delete_user, _, _ in self.rented_car_recording:
             if user_name == ed_delete_user:
-                return "cant delete this user"
+                return print("can't delete this user")
         for end_delete_user, _, _, _ in self.end_rented_car_recording:
             if user_name == end_delete_user:
-                return "cant delete this user"
+                return print("can't delete this user")
         self.users = list(filter(lambda x: x[0] != user_name, self.users))
-        return "delete finish"
+        return print("delete finish")
 
     # Task 12
     def user_rental_date(self, user_name, start_year, start_month, start_day, end_year,
                          end_month, end_day):
-        start_date = datetime(start_year, start_month, start_day)
-        end_date = datetime(end_year, end_month, end_day)
+        try:
+            start_date = datetime(start_year, start_month, start_day)
+            end_date = datetime(end_year, end_month, end_day)
+        except ValueError as e:
+            return "Incorrect date"
+        except TypeError as e:
+            return "The date cannot be a floating point number"
+        except OverflowError as e:
+            return "Exceeding the date length limit, the date year should be 1 to 9999 years"
         index = []
         for recording_user, recording_model, rental_time, back_time in self.end_rented_car_recording:
             if recording_user == user_name and rental_time >= start_date and back_time <= end_date:
                 for factor_name, car_model in self.rental_car:
                     if recording_model == car_model:
                         index.append(f"manufacturer name:{factor_name}, car model:{car_model}")
+                        break
         return "User rental history:\n" + "\n".join(index)
 
 
