@@ -1,8 +1,8 @@
-import Pyro5.api
+from Pyro5.api import expose, Daemon, serve
 from datetime import datetime
 
 
-@Pyro5.api.expose
+@expose
 class rental(object):
     def __init__(self):
         # user information(users name, phone number)
@@ -144,7 +144,7 @@ class rental(object):
                 found = True
         # If the user has not borrowed this model of car
         if not found:
-            return print("user have rented this model car")
+            return print("user have not rented this model car")
         try:
             end_date = datetime(year, month, day)
         except ValueError as e:
@@ -189,8 +189,11 @@ class rental(object):
             # Is there a complete record of the car hire, if so: it cannot be deleted
             if user_name == end_delete_user:
                 return print("can't delete this user")
-        self.users = list(filter(lambda x: x[0] != user_name, self.users))
-        return print("delete finish")
+        for user, _ in self.users:
+            if user_name == user:
+                self.users = list(filter(lambda x: x[0] != user_name, self.users))
+                return print("delete finish")
+        return print("not have this user")
 
     # Task 12 - Returns all car hire information for a user over a period of time
     def user_rental_date(self, user_name, start_year, start_month, start_day, end_year,
@@ -215,29 +218,15 @@ class rental(object):
                     if recording_model == car_model:
                         index.append(f"manufacturer name:{factor_name}, car model:{car_model}")
                         break
+        if len(index) < 1:
+            return "User rental history:\nnot have this user's history"
         return "User rental history:\n" + "\n".join(index)
-
-    def print_rental_data(self):
-        return self.rental_car
-
-    def print_not_rental_data(self):
-        return self.not_rental_car
-
-    def print_rented_data(self):
-        return self.rented_car
-
-    def print_rented_recording(self):
-        return self.rented_car_recording
 
 
 def main():
-    demo = Pyro5.api.Daemon()
-    ns = Pyro5.api.locate_ns()
-    rental_obj = rental()
-    url = demo.register(rental_obj)
-    ns.register("example.rental", url)
-    print(url)
-    demo.requestLoop()
+    daemon = Daemon()
+    rental_object = rental()
+    serve({rental_object: "example.rental"}, daemon=daemon, use_ns=True)
 
 
 if __name__ == "__main__":
